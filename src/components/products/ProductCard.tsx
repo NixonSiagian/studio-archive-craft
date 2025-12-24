@@ -29,11 +29,11 @@ const ProductCard = ({ product }: ProductCardProps) => {
       className="group block"
     >
       {/* Product Image */}
-      <div className="aspect-[3/4] bg-muted mb-4 overflow-hidden relative">
+      <div className="aspect-square bg-muted mb-4 overflow-hidden relative p-6">
         <img 
           src={image}
           alt={product.name}
-          className="w-full h-full object-cover transition-transform duration-700 group-hover:scale-[1.03]"
+          className="w-full h-full object-contain transition-transform duration-700 group-hover:scale-[1.03]"
           loading="lazy"
         />
         
