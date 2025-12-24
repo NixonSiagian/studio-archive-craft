@@ -34,7 +34,7 @@ const Footer = () => {
             <h4 className="text-caption text-background/60 mb-6">CONNECT</h4>
             <nav className="flex flex-col gap-3">
               <a 
-                href="https://instagram.com" 
+                href="https://instagram.com/wnm.studioo" 
                 target="_blank" 
                 rel="noopener noreferrer"
                 className="text-sm hover:opacity-70 transition-opacity"
