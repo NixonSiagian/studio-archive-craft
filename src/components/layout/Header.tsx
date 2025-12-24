@@ -1,10 +1,16 @@
 import { useState } from 'react';
 import { Link, useLocation } from 'react-router-dom';
-import { Menu, X, User } from 'lucide-react';
+import { Menu, X, User, ChevronDown } from 'lucide-react';
 import { useCart } from '@/contexts/CartContext';
 import { useAuth } from '@/contexts/AuthContext';
 import CartDrawer from '@/components/cart/CartDrawer';
 import logoWnm from '@/assets/logo-wnm.png';
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuTrigger,
+} from '@/components/ui/dropdown-menu';
 
 const Header = () => {
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
@@ -12,14 +18,21 @@ const Header = () => {
   const { user, isAdmin } = useAuth();
   const location = useLocation();
 
-  const navLinks = [
+  const publicNavLinks = [
     { href: '/shop', label: 'SHOP' },
     { href: '/archive', label: 'ARCHIVE' },
     { href: '/studio', label: 'STUDIO' },
     { href: '/contact', label: 'CONTACT' },
   ];
 
+  const adminNavLinks = [
+    { href: '/admin', label: 'Dashboard' },
+    { href: '/admin/orders', label: 'Orders' },
+    { href: '/admin/products', label: 'Products' },
+  ];
+
   const isActive = (path: string) => location.pathname === path;
+  const isAdminActive = () => location.pathname.startsWith('/admin');
 
   const getAccountLink = () => {
     if (!user) return '/auth';
@@ -50,7 +63,7 @@ const Header = () => {
 
             {/* Desktop Navigation */}
             <div className="hidden md:flex items-center gap-10">
-              {navLinks.map(link => (
+              {publicNavLinks.map(link => (
                 <Link
                   key={link.href}
                   to={link.href}
@@ -61,6 +74,32 @@ const Header = () => {
                   {link.label}
                 </Link>
               ))}
+
+              {/* Admin Dropdown - Only visible to admins */}
+              {isAdmin && (
+                <DropdownMenu>
+                  <DropdownMenuTrigger className={`text-caption link-underline flex items-center gap-1 ${
+                    isAdminActive() ? 'opacity-100' : 'opacity-70 hover:opacity-100'
+                  } transition-opacity duration-300`}>
+                    ADMIN
+                    <ChevronDown size={12} />
+                  </DropdownMenuTrigger>
+                  <DropdownMenuContent align="end" className="bg-background border-border">
+                    {adminNavLinks.map(link => (
+                      <DropdownMenuItem key={link.href} asChild>
+                        <Link
+                          to={link.href}
+                          className={`w-full cursor-pointer ${
+                            isActive(link.href) ? 'bg-muted' : ''
+                          }`}
+                        >
+                          {link.label}
+                        </Link>
+                      </DropdownMenuItem>
+                    ))}
+                  </DropdownMenuContent>
+                </DropdownMenu>
+              )}
             </div>
 
             {/* Account, Cart & Mobile Menu */}
@@ -99,7 +138,7 @@ const Header = () => {
           {isMobileMenuOpen && (
             <div className="md:hidden py-8 border-t border-border animate-fade-in">
               <div className="flex flex-col gap-6">
-                {navLinks.map(link => (
+                {publicNavLinks.map(link => (
                   <Link
                     key={link.href}
                     to={link.href}
@@ -111,6 +150,28 @@ const Header = () => {
                     {link.label}
                   </Link>
                 ))}
+
+                {/* Admin links for mobile - Only visible to admins */}
+                {isAdmin && (
+                  <>
+                    <div className="border-t border-border pt-4 mt-2">
+                      <span className="text-caption text-muted-foreground text-xs">ADMIN</span>
+                    </div>
+                    {adminNavLinks.map(link => (
+                      <Link
+                        key={link.href}
+                        to={link.href}
+                        onClick={() => setIsMobileMenuOpen(false)}
+                        className={`text-caption ${
+                          isActive(link.href) ? 'opacity-100' : 'opacity-70'
+                        }`}
+                      >
+                        {link.label}
+                      </Link>
+                    ))}
+                  </>
+                )}
+
                 <Link
                   to={getAccountLink()}
                   onClick={() => setIsMobileMenuOpen(false)}
