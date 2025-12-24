@@ -12,6 +12,7 @@ import Studio from "./pages/Studio";
 import Contact from "./pages/Contact";
 import Checkout from "./pages/Checkout";
 import OrderConfirmation from "./pages/OrderConfirmation";
+import Admin from "./pages/Admin";
 import NotFound from "./pages/NotFound";
 
 const queryClient = new QueryClient();
@@ -32,6 +33,7 @@ const App = () => (
             <Route path="/contact" element={<Contact />} />
             <Route path="/checkout" element={<Checkout />} />
             <Route path="/order-confirmation" element={<OrderConfirmation />} />
+            <Route path="/admin" element={<Admin />} />
             <Route path="*" element={<NotFound />} />
           </Routes>
         </BrowserRouter>
