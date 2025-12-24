@@ -25,8 +25,16 @@ const checkoutSchema = z.object({
 const Checkout = () => {
   const navigate = useNavigate();
   const { items, totalPrice, clearCart } = useCart();
-  const { user } = useAuth();
+  const { user, loading } = useAuth();
   const [isSubmitting, setIsSubmitting] = useState(false);
+
+  // Require authentication - redirect to auth if not logged in
+  useEffect(() => {
+    if (!loading && !user) {
+      toast.error('Please log in to complete your order');
+      navigate('/auth', { state: { from: { pathname: '/checkout' } } });
+    }
+  }, [user, loading, navigate]);
 
   const [shippingInfo, setShippingInfo] = useState({
     firstName: '',
