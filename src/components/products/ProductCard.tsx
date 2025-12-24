@@ -34,19 +34,26 @@ const productImageMap: Record<string, string> = {
   'if-youre-reading-this': productTyler
 };
 
-export const getProductImage = (product: DbProduct): string => {
-  // First check for local fallback by slug
-  if (productImageMap[product.slug]) {
-    return productImageMap[product.slug];
-  }
-  // Then check if product has images from database
+export const getProductImage = (product: DbProduct): string | null => {
+  // First check for database images
   if (product.images && product.images.length > 0) {
     const sortedImages = [...product.images].sort((a, b) => a.sort_order - b.sort_order);
     return sortedImages[0].image_url;
   }
-  // Default fallback
-  return productAntman;
+  // Then check for local fallback by slug
+  if (productImageMap[product.slug]) {
+    return productImageMap[product.slug];
+  }
+  // Return null for no image
+  return null;
 };
+
+// Image placeholder component
+export const ImagePlaceholder = ({ className = '' }: { className?: string }) => (
+  <div className={`flex items-center justify-center bg-muted ${className}`}>
+    <span className="text-[10px] text-muted-foreground tracking-widest uppercase">IMAGE PENDING</span>
+  </div>
+);
 
 const ProductCard = ({ product }: ProductCardProps) => {
   const image = getProductImage(product);
@@ -61,12 +68,28 @@ const ProductCard = ({ product }: ProductCardProps) => {
     >
       {/* Product Image */}
       <div className="aspect-square bg-muted mb-4 overflow-hidden relative p-6">
-        <img 
-          src={image}
-          alt={product.name}
-          className="w-full h-full object-contain transition-transform duration-700 group-hover:scale-[1.03]"
-          loading="lazy"
-        />
+        {image ? (
+          <img 
+            src={image}
+            alt={product.name}
+            className="w-full h-full object-contain transition-transform duration-700 group-hover:scale-[1.03]"
+            loading="lazy"
+            onError={(e) => {
+              // Hide broken image and show placeholder
+              const target = e.target as HTMLImageElement;
+              target.style.display = 'none';
+              const parent = target.parentElement;
+              if (parent) {
+                const placeholder = document.createElement('div');
+                placeholder.className = 'w-full h-full flex items-center justify-center';
+                placeholder.innerHTML = '<span class="text-[10px] text-muted-foreground tracking-widest uppercase">IMAGE PENDING</span>';
+                parent.appendChild(placeholder);
+              }
+            }}
+          />
+        ) : (
+          <ImagePlaceholder className="w-full h-full" />
+        )}
         
         {/* Availability Badge */}
         <div className="absolute top-4 left-4">
