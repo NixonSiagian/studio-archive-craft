@@ -35,14 +35,17 @@ const productImageMap: Record<string, string> = {
 };
 
 export const getProductImage = (product: DbProduct): string => {
-  // First check if product has images from database
+  // First check for local fallback by slug
+  if (productImageMap[product.slug]) {
+    return productImageMap[product.slug];
+  }
+  // Then check if product has images from database
   if (product.images && product.images.length > 0) {
-    // Sort by sort_order and return first image
     const sortedImages = [...product.images].sort((a, b) => a.sort_order - b.sort_order);
     return sortedImages[0].image_url;
   }
-  // Fallback to legacy mapping
-  return productImageMap[product.slug] || productAntman;
+  // Default fallback
+  return productAntman;
 };
 
 const ProductCard = ({ product }: ProductCardProps) => {
