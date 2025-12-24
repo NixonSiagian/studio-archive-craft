@@ -1,7 +1,7 @@
 import { useState } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
-import { ArrowLeft, Save } from 'lucide-react';
+import { ArrowLeft, Save, CreditCard, Truck, ExternalLink } from 'lucide-react';
 import { supabase } from '@/integrations/supabase/client';
 import AdminLayout from '@/components/admin/AdminLayout';
 import { formatPrice } from '@/data/products';
@@ -37,6 +37,10 @@ interface Order {
   created_at: string;
   updated_at: string;
   order_items: OrderItem[];
+  payment_proof_url?: string;
+  payment_sender_name?: string;
+  payment_last4?: string;
+  internal_notes?: string;
 }
 
 const AdminOrderDetail = () => {
@@ -71,6 +75,7 @@ const AdminOrderDetail = () => {
       // Initialize form state
       setPaymentStatus(fullOrder.payment_status);
       setFulfillmentStatus(fullOrder.fulfillment_status);
+      setNotes(fullOrder.internal_notes || '');
       
       return fullOrder;
     },
@@ -83,6 +88,7 @@ const AdminOrderDetail = () => {
         .update({
           payment_status: paymentStatus,
           fulfillment_status: fulfillmentStatus,
+          internal_notes: notes || null,
         })
         .eq('id', id);
 
@@ -231,6 +237,43 @@ const AdminOrderDetail = () => {
             </div>
           </section>
 
+          {/* Payment Proof */}
+          {(order.payment_proof_url || order.payment_sender_name || order.payment_last4) && (
+            <section className="border border-border p-6">
+              <h2 className="text-xs uppercase tracking-widest text-muted-foreground mb-4">
+                Payment Proof
+              </h2>
+              <div className="space-y-4">
+                {order.payment_sender_name && (
+                  <div>
+                    <p className="text-xs text-muted-foreground mb-1">Sender Name</p>
+                    <p className="text-sm">{order.payment_sender_name}</p>
+                  </div>
+                )}
+                {order.payment_last4 && (
+                  <div>
+                    <p className="text-xs text-muted-foreground mb-1">Last 4 Digits</p>
+                    <p className="text-sm font-mono">{order.payment_last4}</p>
+                  </div>
+                )}
+                {order.payment_proof_url && (
+                  <div>
+                    <p className="text-xs text-muted-foreground mb-2">Proof Image</p>
+                    <a
+                      href={order.payment_proof_url}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      className="inline-flex items-center gap-2 text-sm hover:opacity-70 transition-opacity"
+                    >
+                      <ExternalLink size={14} />
+                      View Proof Image
+                    </a>
+                  </div>
+                )}
+              </div>
+            </section>
+          )}
+
           {/* Internal Notes */}
           <section className="border border-border p-6">
             <h2 className="text-xs uppercase tracking-widest text-muted-foreground mb-4">
@@ -238,18 +281,51 @@ const AdminOrderDetail = () => {
             </h2>
             <textarea
               value={notes}
-              onChange={(e) => setNotes(e.target.value)}
+              onChange={(e) => {
+                setNotes(e.target.value);
+                setHasChanges(true);
+              }}
               placeholder="Add internal notes about this order..."
               className="w-full h-32 px-4 py-3 bg-transparent border border-border text-sm focus:outline-none focus:border-foreground transition-colors resize-none"
             />
-            <p className="text-xs text-muted-foreground mt-2">
-              Notes are for internal use only and are not saved to the database yet.
-            </p>
           </section>
         </div>
 
         {/* Right Column - Status Updates */}
         <div className="space-y-6">
+          {/* Quick Actions */}
+          <section className="border border-border p-6">
+            <h2 className="text-xs uppercase tracking-widest text-muted-foreground mb-4">
+              Quick Actions
+            </h2>
+            <div className="space-y-3">
+              {paymentStatus !== 'paid' && (
+                <button
+                  onClick={() => {
+                    setPaymentStatus('paid');
+                    setHasChanges(true);
+                  }}
+                  className="w-full flex items-center justify-center gap-2 py-3 border border-border text-xs uppercase tracking-widest hover:bg-muted/50 transition-colors"
+                >
+                  <CreditCard className="w-4 h-4" />
+                  MARK AS PAID
+                </button>
+              )}
+              {fulfillmentStatus !== 'shipped' && fulfillmentStatus !== 'completed' && (
+                <button
+                  onClick={() => {
+                    setFulfillmentStatus('shipped');
+                    setHasChanges(true);
+                  }}
+                  className="w-full flex items-center justify-center gap-2 py-3 border border-border text-xs uppercase tracking-widest hover:bg-muted/50 transition-colors"
+                >
+                  <Truck className="w-4 h-4" />
+                  MARK AS SHIPPED
+                </button>
+              )}
+            </div>
+          </section>
+
           {/* Status Card */}
           <section className="border border-border p-6 sticky top-8">
             <h2 className="text-xs uppercase tracking-widest text-muted-foreground mb-6">
