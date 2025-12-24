@@ -17,7 +17,9 @@ import OrderConfirmation from "./pages/OrderConfirmation";
 import Auth from "./pages/Auth";
 import ResetPassword from "./pages/ResetPassword";
 import AccountOrders from "./pages/AccountOrders";
-import Admin from "./pages/Admin";
+import AdminDashboard from "./pages/admin/AdminDashboard";
+import AdminOrders from "./pages/admin/AdminOrders";
+import AdminOrderDetail from "./pages/admin/AdminOrderDetail";
 import NotFound from "./pages/NotFound";
 
 const queryClient = new QueryClient();
@@ -50,17 +52,10 @@ const App = () => (
                   <AccountOrders />
                 </ProtectedRoute>
               } />
-              <Route path="/admin/orders" element={
-                <ProtectedRoute requireAdmin>
-                  <Admin />
-                </ProtectedRoute>
-              } />
-              {/* Redirect old /admin to /admin/orders */}
-              <Route path="/admin" element={
-                <ProtectedRoute requireAdmin>
-                  <Admin />
-                </ProtectedRoute>
-              } />
+              {/* Admin Routes - protected with their own layout */}
+              <Route path="/admin" element={<AdminDashboard />} />
+              <Route path="/admin/orders" element={<AdminOrders />} />
+              <Route path="/admin/order/:id" element={<AdminOrderDetail />} />
               <Route path="*" element={<NotFound />} />
             </Routes>
           </BrowserRouter>
