@@ -66,7 +66,7 @@ const Archive = () => {
                         to={`/product/${product.id}`}
                         className="group"
                       >
-                        <div className="aspect-[3/4] bg-muted mb-3 overflow-hidden">
+                        <div className="aspect-square bg-muted mb-3 overflow-hidden p-4">
                           <div className="w-full h-full flex items-center justify-center text-muted-foreground/30 text-xs group-hover:bg-muted/80 transition-colors">
                             IMG
                           </div>

@@ -63,11 +63,11 @@ const ProductDetail = () => {
             {/* Images */}
             <div className="space-y-4">
               {/* Main Image */}
-              <div className="aspect-[3/4] bg-muted overflow-hidden">
+              <div className="aspect-[4/5] bg-muted overflow-hidden p-8 md:p-12">
                 <img 
                   src={productImage}
                   alt={product.name}
-                  className="w-full h-full object-cover"
+                  className="w-full h-full object-contain"
                 />
               </div>
             </div>
