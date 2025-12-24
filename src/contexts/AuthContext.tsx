@@ -30,19 +30,31 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
   const [session, setSession] = useState<Session | null>(null);
   const [loading, setLoading] = useState(true);
   const [role, setRole] = useState<UserRole | null>(null);
+  const [roleLoading, setRoleLoading] = useState(false);
 
   // Fetch user role from database only - no hardcoded admin emails
   const fetchUserRole = async (userId: string) => {
-    const { data } = await supabase
-      .from('user_roles')
-      .select('role')
-      .eq('user_id', userId)
-      .maybeSingle();
-    
-    if (data) {
-      setRole(data.role as UserRole);
-    } else {
+    setRoleLoading(true);
+    try {
+      const { data, error } = await supabase
+        .from('user_roles')
+        .select('role')
+        .eq('user_id', userId)
+        .maybeSingle();
+      
+      if (error) {
+        console.error('[AuthContext] Error fetching role:', error);
+        setRole('customer');
+      } else if (data) {
+        setRole(data.role as UserRole);
+      } else {
+        setRole('customer');
+      }
+    } catch (err) {
+      console.error('[AuthContext] Exception fetching role:', err);
       setRole('customer');
+    } finally {
+      setRoleLoading(false);
     }
   };
 
@@ -50,6 +62,7 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
     // Set up auth state listener FIRST
     const { data: { subscription } } = supabase.auth.onAuthStateChange(
       (event, session) => {
+        console.log('[AuthContext] Auth state changed:', event, session?.user?.email);
         setSession(session);
         setUser(session?.user ?? null);
         
@@ -68,6 +81,7 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
 
     // THEN check for existing session
     supabase.auth.getSession().then(({ data: { session } }) => {
+      console.log('[AuthContext] Initial session:', session?.user?.email);
       setSession(session);
       setUser(session?.user ?? null);
       
@@ -112,10 +126,13 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
     setRole(null);
   };
 
+  // Combined loading state - true until both auth AND role are resolved
+  const isLoading = loading || roleLoading;
+
   const value = {
     user,
     session,
-    loading,
+    loading: isLoading,
     role,
     signUp,
     signIn,

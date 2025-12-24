@@ -15,8 +15,16 @@ import {
 const Header = () => {
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
   const { totalItems, setIsCartOpen } = useCart();
-  const { user, isAdmin } = useAuth();
+  const { user, isAdmin, loading, role } = useAuth();
   const location = useLocation();
+
+  // Debug logging (remove after verification)
+  console.log('[Header] Auth State:', { 
+    email: user?.email, 
+    role, 
+    isAdmin, 
+    loading 
+  });
 
   const publicNavLinks = [
     { href: '/shop', label: 'SHOP' },
@@ -44,6 +52,9 @@ const Header = () => {
     if (!user) return 'SIGN IN';
     return 'ACCOUNT';
   };
+
+  // Don't render navigation links while auth is loading
+  const showAdminMenu = !loading && isAdmin;
 
   return (
     <>
@@ -76,8 +87,8 @@ const Header = () => {
                 </Link>
               ))}
 
-              {/* Admin Dropdown - Only visible to admins */}
-              {isAdmin && (
+              {/* Admin Dropdown - Only visible to admins after auth resolves */}
+              {showAdminMenu && (
                 <DropdownMenu>
                   <DropdownMenuTrigger className={`text-caption link-underline flex items-center gap-1 ${
                     isAdminActive() ? 'opacity-100' : 'opacity-70 hover:opacity-100'
@@ -152,8 +163,8 @@ const Header = () => {
                   </Link>
                 ))}
 
-                {/* Admin links for mobile - Only visible to admins */}
-                {isAdmin && (
+                {/* Admin links for mobile - Only visible to admins after auth resolves */}
+                {showAdminMenu && (
                   <>
                     <div className="border-t border-border pt-4 mt-2">
                       <span className="text-caption text-muted-foreground text-xs">ADMIN</span>
