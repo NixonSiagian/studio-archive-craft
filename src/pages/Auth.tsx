@@ -3,13 +3,16 @@ import { useNavigate, useLocation } from 'react-router-dom';
 import { z } from 'zod';
 import Layout from '@/components/layout/Layout';
 import { useAuth } from '@/contexts/AuthContext';
+import { supabase } from '@/integrations/supabase/client';
 import { toast } from '@/components/ui/sonner';
 
 const emailSchema = z.string().email('Please enter a valid email address');
 const passwordSchema = z.string().min(6, 'Password must be at least 6 characters');
 
+type AuthMode = 'login' | 'signup' | 'forgot';
+
 const Auth = () => {
-  const [isLogin, setIsLogin] = useState(true);
+  const [mode, setMode] = useState<AuthMode>('login');
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [fullName, setFullName] = useState('');
@@ -24,7 +27,6 @@ const Auth = () => {
 
   useEffect(() => {
     if (user) {
-      // Redirect authenticated users
       if (isAdmin) {
         navigate('/admin/orders', { replace: true });
       } else {
@@ -44,15 +46,17 @@ const Auth = () => {
       }
     }
     
-    try {
-      passwordSchema.parse(password);
-    } catch (e) {
-      if (e instanceof z.ZodError) {
-        newErrors.password = e.errors[0].message;
+    if (mode !== 'forgot') {
+      try {
+        passwordSchema.parse(password);
+      } catch (e) {
+        if (e instanceof z.ZodError) {
+          newErrors.password = e.errors[0].message;
+        }
       }
     }
     
-    if (!isLogin && !fullName.trim()) {
+    if (mode === 'signup' && !fullName.trim()) {
       newErrors.fullName = 'Please enter your name';
     }
     
@@ -60,15 +64,41 @@ const Auth = () => {
     return Object.keys(newErrors).length === 0;
   };
 
+  const handleForgotPassword = async () => {
+    if (!validateForm()) return;
+    
+    setIsSubmitting(true);
+    try {
+      const { error } = await supabase.auth.resetPasswordForEmail(email, {
+        redirectTo: `${window.location.origin}/auth?mode=reset`,
+      });
+      
+      if (error) {
+        toast.error(error.message);
+      } else {
+        toast.success('Password reset email sent! Check your inbox.');
+        setMode('login');
+      }
+    } catch {
+      toast.error('An unexpected error occurred');
+    } finally {
+      setIsSubmitting(false);
+    }
+  };
+
   const handleSubmit = async (e: FormEvent) => {
     e.preventDefault();
+    
+    if (mode === 'forgot') {
+      return handleForgotPassword();
+    }
     
     if (!validateForm()) return;
     
     setIsSubmitting(true);
 
     try {
-      if (isLogin) {
+      if (mode === 'login') {
         const { error } = await signIn(email, password);
         if (error) {
           if (error.message.includes('Invalid login credentials')) {
@@ -98,22 +128,43 @@ const Auth = () => {
     }
   };
 
+  const getTitle = () => {
+    switch (mode) {
+      case 'forgot': return 'RESET PASSWORD';
+      case 'signup': return 'CREATE ACCOUNT';
+      default: return 'SIGN IN';
+    }
+  };
+
+  const getSubtitle = () => {
+    switch (mode) {
+      case 'forgot': return 'Enter your email to receive a reset link';
+      case 'signup': return 'Join the WNM community';
+      default: return 'Welcome back to WNM';
+    }
+  };
+
+  const getButtonText = () => {
+    if (isSubmitting) return 'PLEASE WAIT...';
+    switch (mode) {
+      case 'forgot': return 'SEND RESET LINK';
+      case 'signup': return 'CREATE ACCOUNT';
+      default: return 'SIGN IN';
+    }
+  };
+
   return (
     <Layout>
-      <title>{isLogin ? 'Sign In' : 'Create Account'} — WNM</title>
+      <title>{getTitle()} — WNM</title>
       
       <section className="py-section min-h-[70vh] flex items-center">
         <div className="container mx-auto px-6 lg:px-12">
           <div className="max-w-md mx-auto">
-            <h1 className="heading-section mb-4 text-center">
-              {isLogin ? 'SIGN IN' : 'CREATE ACCOUNT'}
-            </h1>
-            <p className="text-caption text-center mb-12">
-              {isLogin ? 'Welcome back to WNM' : 'Join the WNM community'}
-            </p>
+            <h1 className="heading-section mb-4 text-center">{getTitle()}</h1>
+            <p className="text-caption text-center mb-12">{getSubtitle()}</p>
 
             <form onSubmit={handleSubmit} className="space-y-6">
-              {!isLogin && (
+              {mode === 'signup' && (
                 <div>
                   <input
                     type="text"
@@ -141,38 +192,58 @@ const Auth = () => {
                 )}
               </div>
               
-              <div>
-                <input
-                  type="password"
-                  value={password}
-                  onChange={(e) => setPassword(e.target.value)}
-                  placeholder="Password"
-                  className="w-full px-4 py-3 bg-transparent border border-border text-sm focus:outline-none focus:border-foreground transition-colors"
-                />
-                {errors.password && (
-                  <p className="text-destructive text-xs mt-1">{errors.password}</p>
-                )}
-              </div>
+              {mode !== 'forgot' && (
+                <div>
+                  <input
+                    type="password"
+                    value={password}
+                    onChange={(e) => setPassword(e.target.value)}
+                    placeholder="Password"
+                    className="w-full px-4 py-3 bg-transparent border border-border text-sm focus:outline-none focus:border-foreground transition-colors"
+                  />
+                  {errors.password && (
+                    <p className="text-destructive text-xs mt-1">{errors.password}</p>
+                  )}
+                </div>
+              )}
 
               <button
                 type="submit"
                 disabled={isSubmitting}
                 className={`btn-primary w-full ${isSubmitting ? 'opacity-50' : ''}`}
               >
-                {isSubmitting ? 'PLEASE WAIT...' : isLogin ? 'SIGN IN' : 'CREATE ACCOUNT'}
+                {getButtonText()}
               </button>
             </form>
 
-            <div className="mt-8 text-center">
+            <div className="mt-8 text-center space-y-3">
+              {mode === 'login' && (
+                <button
+                  onClick={() => { setMode('forgot'); setErrors({}); }}
+                  className="text-sm text-muted-foreground hover:text-foreground transition-colors block w-full"
+                >
+                  Forgot your password?
+                </button>
+              )}
+              
               <button
                 onClick={() => {
-                  setIsLogin(!isLogin);
+                  setMode(mode === 'login' ? 'signup' : 'login');
                   setErrors({});
                 }}
                 className="text-sm text-muted-foreground hover:text-foreground transition-colors"
               >
-                {isLogin ? "Don't have an account? Create one" : 'Already have an account? Sign in'}
+                {mode === 'signup' ? 'Already have an account? Sign in' : "Don't have an account? Create one"}
               </button>
+
+              {mode === 'forgot' && (
+                <button
+                  onClick={() => { setMode('login'); setErrors({}); }}
+                  className="text-sm text-muted-foreground hover:text-foreground transition-colors block w-full"
+                >
+                  Back to sign in
+                </button>
+              )}
             </div>
           </div>
         </div>

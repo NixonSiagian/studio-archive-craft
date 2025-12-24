@@ -23,13 +23,11 @@ const Header = () => {
 
   const getAccountLink = () => {
     if (!user) return '/auth';
-    if (isAdmin) return '/admin/orders';
     return '/account/orders';
   };
 
   const getAccountLabel = () => {
     if (!user) return 'SIGN IN';
-    if (isAdmin) return 'ADMIN';
     return 'ACCOUNT';
   };
 
