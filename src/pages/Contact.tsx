@@ -51,12 +51,12 @@ const Contact = () => {
                 <div>
                   <p className="text-mono text-muted-foreground mb-2">INSTAGRAM</p>
                   <a 
-                    href="https://instagram.com"
+                    href="https://instagram.com/wnm.studioo"
                     target="_blank"
                     rel="noopener noreferrer"
                     className="text-lg hover:opacity-70 transition-opacity"
                   >
-                    @wnm.studio
+                    @wnm.studioo
                   </a>
                 </div>
               </div>
