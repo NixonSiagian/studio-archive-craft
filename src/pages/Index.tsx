@@ -3,7 +3,7 @@ import { ArrowRight } from 'lucide-react';
 import Layout from '@/components/layout/Layout';
 import ProductCard from '@/components/products/ProductCard';
 import { products } from '@/data/products';
-import heroImage from '@/assets/hero-image.jpg';
+import heroModel from '@/assets/hero-model.jpg';
 
 const Index = () => {
   const featuredProducts = products.filter(p => p.drop === 'archive-001').slice(0, 3);
@@ -15,15 +15,14 @@ const Index = () => {
       <meta name="description" content="WNM is a clothing studio producing limited-run garments. Each piece documented, produced once, never restocked. EST 2025." />
 
       {/* Hero Section */}
-      <section className="relative h-screen flex items-center justify-center overflow-hidden">
-        {/* Background Image */}
-        <div className="absolute inset-0">
+      <section className="relative h-screen flex items-center justify-center overflow-hidden bg-[#d4cfc7]">
+        {/* Model Image */}
+        <div className="absolute inset-0 flex items-center justify-center">
           <img 
-            src={heroImage} 
-            alt="WNM Studio Editorial"
-            className="w-full h-full object-cover"
+            src={heroModel} 
+            alt="Model wearing WNM Drake t-shirt"
+            className="h-full w-auto max-w-full object-contain animate-fade-in"
           />
-          <div className="absolute inset-0 bg-background/30" />
         </div>
 
         {/* Content */}
