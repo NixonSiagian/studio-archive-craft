@@ -1,12 +1,35 @@
 import { Link } from 'react-router-dom';
 import { ArrowRight } from 'lucide-react';
+import { useQuery } from '@tanstack/react-query';
 import Layout from '@/components/layout/Layout';
-import ProductCard from '@/components/products/ProductCard';
-import { products } from '@/data/products';
+import ProductCard, { DbProduct } from '@/components/products/ProductCard';
+import { supabase } from '@/integrations/supabase/client';
 import heroModel from '@/assets/hero-model.jpg';
 
 const Index = () => {
-  const featuredProducts = products.filter(p => p.drop === 'archive-001').slice(0, 3);
+  const { data: featuredProducts = [] } = useQuery({
+    queryKey: ['featured-products'],
+    queryFn: async () => {
+      const { data: productsData } = await supabase
+        .from('products')
+        .select('*')
+        .eq('is_active', true)
+        .limit(3);
+
+      const productIds = productsData?.map((p) => p.id) || [];
+      const { data: imagesData } = await supabase
+        .from('product_images')
+        .select('*')
+        .in('product_id', productIds)
+        .order('sort_order', { ascending: true });
+
+      return productsData?.map((product) => ({
+        ...product,
+        stock_by_size: product.stock_by_size as Record<string, number>,
+        images: imagesData?.filter((img) => img.product_id === product.id) || [],
+      })) as DbProduct[];
+    },
+  });
 
   return (
     <Layout>

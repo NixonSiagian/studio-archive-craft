@@ -20,6 +20,8 @@ import AccountOrders from "./pages/AccountOrders";
 import AdminDashboard from "./pages/admin/AdminDashboard";
 import AdminOrders from "./pages/admin/AdminOrders";
 import AdminOrderDetail from "./pages/admin/AdminOrderDetail";
+import AdminProducts from "./pages/admin/AdminProducts";
+import AdminProductForm from "./pages/admin/AdminProductForm";
 import NotFound from "./pages/NotFound";
 
 const queryClient = new QueryClient();
@@ -52,10 +54,12 @@ const App = () => (
                   <AccountOrders />
                 </ProtectedRoute>
               } />
-              {/* Admin Routes - protected with their own layout */}
+              {/* Admin Routes */}
               <Route path="/admin" element={<AdminDashboard />} />
               <Route path="/admin/orders" element={<AdminOrders />} />
               <Route path="/admin/order/:id" element={<AdminOrderDetail />} />
+              <Route path="/admin/products" element={<AdminProducts />} />
+              <Route path="/admin/products/:id" element={<AdminProductForm />} />
               <Route path="*" element={<NotFound />} />
             </Routes>
           </BrowserRouter>
