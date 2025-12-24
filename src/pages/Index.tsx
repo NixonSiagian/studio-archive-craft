@@ -25,22 +25,19 @@ const Index = () => {
           />
         </div>
 
-        {/* Content */}
-        <div className="relative z-10 text-center px-6 animate-fade-in-up">
-          <p className="text-caption mb-6 stagger-1">ARCHIVE 001 — NOW AVAILABLE</p>
-          <h1 className="heading-hero mb-8 stagger-2">
-            CLOTHING AS<br />DOCUMENTATION
-          </h1>
-          <div className="flex flex-col sm:flex-row items-center justify-center gap-4 stagger-3">
-            <Link to="/shop" className="btn-primary">
-              VIEW COLLECTION
+        {/* Content - Bottom positioned */}
+        <div className="absolute bottom-16 left-0 right-0 z-10 px-6 lg:px-12 animate-fade-in">
+          <div className="max-w-7xl mx-auto">
+            <h1 className="text-sm tracking-[0.2em] font-light text-foreground/80 mb-4">
+              CLOTHING AS DOCUMENTATION
+            </h1>
+            <Link 
+              to="/shop" 
+              className="inline-flex items-center text-xs tracking-[0.15em] text-foreground/60 hover:text-foreground transition-colors"
+            >
+              VIEW COLLECTION <ArrowRight size={12} className="ml-2" />
             </Link>
           </div>
-        </div>
-
-        {/* Scroll Indicator */}
-        <div className="absolute bottom-8 left-1/2 -translate-x-1/2 animate-bounce">
-          <div className="w-px h-12 bg-foreground/30" />
         </div>
       </section>
 
