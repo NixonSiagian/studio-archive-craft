@@ -4,7 +4,7 @@ import { useQuery } from '@tanstack/react-query';
 import Layout from '@/components/layout/Layout';
 import ProductCard, { DbProduct } from '@/components/products/ProductCard';
 import { supabase } from '@/integrations/supabase/client';
-import heroModel from '@/assets/hero-model.jpg';
+import heroModel from '@/assets/hero-model-new.png';
 
 const Index = () => {
   const { data: featuredProducts = [] } = useQuery({
@@ -38,26 +38,26 @@ const Index = () => {
       <meta name="description" content="WNM is a clothing studio producing limited-run garments. Each piece documented, produced once, never restocked. EST 2025." />
 
       {/* Hero Section */}
-      <section className="relative min-h-[85vh] flex items-center justify-center overflow-hidden bg-cream">
-        {/* Subtle grain overlay */}
-        <div 
-          className="absolute inset-0 z-[1] pointer-events-none opacity-[0.04]"
-          style={{
-            backgroundImage: `url("data:image/svg+xml,%3Csvg viewBox='0 0 400 400' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noise'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noise)'/%3E%3C/svg%3E")`,
+      <section 
+        className="relative h-screen min-h-[85vh] flex items-center justify-center overflow-hidden"
+        style={{ backgroundColor: '#EDEBE6' }}
+      >
+        {/* Subtle dark overlay for text readability */}
+        <div className="absolute inset-0 z-[1] pointer-events-none bg-black/[0.08]" />
+        
+        {/* Model Image - Full cover, centered */}
+        <img 
+          src={heroModel} 
+          alt="Model wearing WNM t-shirt"
+          className="absolute inset-0 w-full h-full object-cover object-center animate-fade-in"
+          onError={(e) => {
+            // Fallback to neutral background if image fails
+            e.currentTarget.style.display = 'none';
           }}
         />
-        
-        {/* Model Image */}
-        <div className="absolute inset-0 flex items-center justify-center pt-8">
-          <img 
-            src={heroModel} 
-            alt="Model wearing WNM Drake t-shirt"
-            className="h-[85%] w-auto max-w-full object-contain animate-fade-in grayscale-[30%] contrast-[0.92] saturate-[0.85]"
-          />
-        </div>
 
-        {/* Content - Bottom positioned */}
-        <div className="absolute bottom-12 left-0 right-0 z-10 px-6 lg:px-12 animate-fade-in">
+        {/* Content - Bottom third positioned */}
+        <div className="absolute bottom-[12%] md:bottom-[10%] left-0 right-0 z-10 px-6 lg:px-12 animate-fade-in">
           <div className="max-w-7xl mx-auto">
             <h1 className="text-xs md:text-sm tracking-[0.25em] font-medium text-foreground/90 mb-3">
               CLOTHING AS DOCUMENTATION

@@ -42,10 +42,10 @@ const Footer = () => {
                 Instagram
               </a>
               <a 
-                href="mailto:studio@wnm.co"
+                href="mailto:studio@wnmwear.store"
                 className="text-sm hover:opacity-70 transition-opacity"
               >
-                studio@wnm.co
+                studio@wnmwear.store
               </a>
             </nav>
           </div>
