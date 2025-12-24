@@ -69,40 +69,31 @@ const Auth = () => {
     
     setIsSubmitting(true);
     try {
-      const supabaseUrl = import.meta.env.VITE_SUPABASE_URL;
-      const response = await fetch(`${supabaseUrl}/functions/v1/log-password-reset`, {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify({
-          email,
-          redirectTo: `${window.location.origin}/reset-password`,
-        }),
+      const { error } = await supabase.auth.resetPasswordForEmail(email, {
+        redirectTo: `${window.location.origin}/reset-password`,
       });
-
-      const data = await response.json();
-
-      if (response.status === 429) {
-        toast.error('Too many requests. Please wait a few minutes before trying again.');
-        return;
+      
+      if (error) {
+        // Handle rate limiting
+        if (error.message.toLowerCase().includes('rate') || error.status === 429) {
+          toast.error('Too many requests. Please wait a few minutes before trying again.');
+          return;
+        }
+        // Log for debugging but show generic message
+        console.error('Password reset error:', error.message);
       }
-
-      if (!response.ok && data.error === 'server_error') {
-        toast.error('An unexpected error occurred. Please try again later.');
-        return;
-      }
-
+      
       // Always show success message (don't reveal if account exists)
       toast.success(
         <div>
-          <p className="font-medium">Reset link sent!</p>
+          <p className="font-medium">If this email is registered, a reset link has been sent.</p>
           <p className="text-sm mt-1 opacity-80">Check your inbox. If you don't see it, check your Spam or Promotions folder.</p>
         </div>,
         { duration: 8000 }
       );
       setMode('login');
-    } catch {
+    } catch (err) {
+      console.error('Unexpected password reset error:', err);
       toast.error('An unexpected error occurred. Please try again later.');
     } finally {
       setIsSubmitting(false);
