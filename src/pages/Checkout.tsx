@@ -93,7 +93,14 @@ const Checkout = () => {
         .from('order_items')
         .insert(orderItems);
 
-      if (itemsError) throw itemsError;
+      if (itemsError) {
+        // Handle stock validation errors from the database trigger
+        if (itemsError.message?.includes('Insufficient stock')) {
+          toast.error('Some items are out of stock. Please update your cart.');
+          return;
+        }
+        throw itemsError;
+      }
 
       clearCart();
       toast.success('Order placed successfully');
