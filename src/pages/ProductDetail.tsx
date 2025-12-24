@@ -4,17 +4,14 @@ import { ArrowLeft, Minus, Plus } from 'lucide-react';
 import Layout from '@/components/layout/Layout';
 import { products, formatPrice } from '@/data/products';
 import { useCart } from '@/contexts/CartContext';
+import { getProductImage } from '@/components/products/ProductCard';
+import SizeGuide from '@/components/products/SizeGuide';
 import {
   Accordion,
   AccordionContent,
   AccordionItem,
   AccordionTrigger,
 } from '@/components/ui/accordion';
-import product1 from '@/assets/product-1.jpg';
-import product2 from '@/assets/product-2.jpg';
-import product3 from '@/assets/product-3.jpg';
-
-const productImages = [product1, product2, product3];
 
 const ProductDetail = () => {
   const { id } = useParams<{ id: string }>();
@@ -25,7 +22,6 @@ const ProductDetail = () => {
   
   const [selectedSize, setSelectedSize] = useState<string>('');
   const [quantity, setQuantity] = useState(1);
-  const [activeImage, setActiveImage] = useState(0);
 
   if (!product) {
     return (
@@ -39,6 +35,8 @@ const ProductDetail = () => {
       </Layout>
     );
   }
+
+  const productImage = getProductImage(product.id);
 
   const handleAddToCart = () => {
     if (!selectedSize) return;
@@ -67,29 +65,10 @@ const ProductDetail = () => {
               {/* Main Image */}
               <div className="aspect-[3/4] bg-muted overflow-hidden">
                 <img 
-                  src={productImages[activeImage % productImages.length]}
+                  src={productImage}
                   alt={product.name}
                   className="w-full h-full object-cover"
                 />
-              </div>
-
-              {/* Thumbnail Gallery */}
-              <div className="flex gap-3">
-                {productImages.map((img, index) => (
-                  <button
-                    key={index}
-                    onClick={() => setActiveImage(index)}
-                    className={`w-20 h-24 bg-muted overflow-hidden transition-opacity ${
-                      activeImage === index ? 'opacity-100 ring-1 ring-foreground' : 'opacity-60 hover:opacity-100'
-                    }`}
-                  >
-                    <img 
-                      src={img}
-                      alt={`${product.name} view ${index + 1}`}
-                      className="w-full h-full object-cover"
-                    />
-                  </button>
-                ))}
               </div>
             </div>
 
@@ -121,7 +100,10 @@ const ProductDetail = () => {
 
               {/* Size Selection */}
               <div>
-                <p className="text-mono text-muted-foreground mb-3">SIZE</p>
+                <div className="flex items-center justify-between mb-3">
+                  <p className="text-mono text-muted-foreground">SIZE</p>
+                  <SizeGuide />
+                </div>
                 <div className="flex flex-wrap gap-2">
                   {product.sizes.map(size => (
                     <button

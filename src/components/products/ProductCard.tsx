@@ -1,23 +1,27 @@
 import { Link } from 'react-router-dom';
 import { Product, formatPrice } from '@/data/products';
-import product1 from '@/assets/product-1.jpg';
-import product2 from '@/assets/product-2.jpg';
-import product3 from '@/assets/product-3.jpg';
-import product4 from '@/assets/product-4.jpg';
+import productBrent from '@/assets/product-brent.jpg';
+import productDrake from '@/assets/product-drake.jpg';
+import productTyler from '@/assets/product-tyler.jpg';
+import productAntman from '@/assets/product-antman.jpg';
 
 interface ProductCardProps {
   product: Product;
 }
 
 const productImageMap: Record<string, string> = {
-  'ant-man-tee': product1,
-  'if-youre-reading-this-tee': product2,
-  'brent-tee': product3,
-  'wnm-studio-tee': product4
+  'ant-man-tee': productAntman,
+  'drake-tee': productDrake,
+  'brent-tee': productBrent,
+  'tyler-tee': productTyler
+};
+
+export const getProductImage = (productId: string) => {
+  return productImageMap[productId] || productAntman;
 };
 
 const ProductCard = ({ product }: ProductCardProps) => {
-  const image = productImageMap[product.id] || product1;
+  const image = productImageMap[product.id] || productAntman;
 
   return (
     <Link 
