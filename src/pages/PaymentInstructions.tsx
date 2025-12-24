@@ -89,18 +89,22 @@ const PaymentInstructions = () => {
 
       if (uploadError) throw uploadError;
 
-      const { data: urlData } = supabase.storage
+      // Use signed URL for secure access (1 hour expiry)
+      const { data: urlData, error: urlError } = await supabase.storage
         .from('payment-proofs')
-        .getPublicUrl(fileName);
+        .createSignedUrl(fileName, 3600);
 
-      const uploadedUrl = urlData.publicUrl;
-      setProofUrl(uploadedUrl);
+      if (urlError) throw urlError;
+      
+      // Store the file path (not the signed URL) for admin to generate fresh signed URLs
+      const storedPath = fileName;
+      setProofUrl(urlData.signedUrl);
 
-      // Update order with proof info
+      // Update order with file path (admin will generate signed URLs)
       const { error: updateError } = await supabase
         .from('orders')
         .update({
-          payment_proof_url: uploadedUrl,
+          payment_proof_url: storedPath,
           payment_sender_name: senderName || null,
           payment_last4: last4 || null,
         })
