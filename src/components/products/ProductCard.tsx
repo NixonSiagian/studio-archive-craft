@@ -1,14 +1,32 @@
 import { Link } from 'react-router-dom';
-import { Product, formatPrice } from '@/data/products';
+import { formatPrice } from '@/data/products';
 import productBrent from '@/assets/product-brent.jpg';
 import productDrake from '@/assets/product-drake.jpg';
 import productTyler from '@/assets/product-tyler.jpg';
 import productAntman from '@/assets/product-antman.jpg';
 
-interface ProductCardProps {
-  product: Product;
+// Database product interface
+export interface DbProduct {
+  id: string;
+  name: string;
+  slug: string;
+  price_idr: number;
+  drop: string;
+  category: string;
+  color: string;
+  availability_label: string;
+  description_lines: string[];
+  sizes: string[];
+  stock_by_size: Record<string, number>;
+  is_active: boolean;
+  images?: { id: string; image_url: string; sort_order: number }[];
 }
 
+interface ProductCardProps {
+  product: DbProduct;
+}
+
+// Fallback images for legacy products
 const productImageMap: Record<string, string> = {
   'ant-man-tee': productAntman,
   'drake-tee': productDrake,
@@ -16,16 +34,26 @@ const productImageMap: Record<string, string> = {
   'tyler-tee': productTyler
 };
 
-export const getProductImage = (productId: string) => {
-  return productImageMap[productId] || productAntman;
+export const getProductImage = (product: DbProduct): string => {
+  // First check if product has images from database
+  if (product.images && product.images.length > 0) {
+    // Sort by sort_order and return first image
+    const sortedImages = [...product.images].sort((a, b) => a.sort_order - b.sort_order);
+    return sortedImages[0].image_url;
+  }
+  // Fallback to legacy mapping
+  return productImageMap[product.slug] || productAntman;
 };
 
 const ProductCard = ({ product }: ProductCardProps) => {
-  const image = productImageMap[product.id] || productAntman;
+  const image = getProductImage(product);
+
+  // Format drop label (e.g., "archive-001" -> "ARCHIVE 001")
+  const dropLabel = product.drop.replace('-', ' ').toUpperCase();
 
   return (
     <Link 
-      to={`/product/${product.id}`}
+      to={`/product/${product.slug}`}
       className="group block"
     >
       {/* Product Image */}
@@ -40,7 +68,7 @@ const ProductCard = ({ product }: ProductCardProps) => {
         {/* Availability Badge */}
         <div className="absolute top-4 left-4">
           <span className="text-mono text-[10px] text-muted-foreground bg-background/80 px-2 py-1">
-            {product.availabilityLabel}
+            {product.availability_label}
           </span>
         </div>
       </div>
@@ -52,12 +80,12 @@ const ProductCard = ({ product }: ProductCardProps) => {
             {product.name}
           </h3>
           <span className="text-sm text-muted-foreground flex-shrink-0">
-            {formatPrice(product.price)}
+            {formatPrice(product.price_idr)}
           </span>
         </div>
         
         <p className="text-mono text-[10px] text-muted-foreground">
-          {product.dropLabel}
+          {dropLabel}
         </p>
       </div>
     </Link>

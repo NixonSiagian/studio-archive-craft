@@ -100,6 +100,89 @@ export type Database = {
         }
         Relationships: []
       }
+      product_images: {
+        Row: {
+          created_at: string
+          id: string
+          image_url: string
+          product_id: string
+          sort_order: number
+        }
+        Insert: {
+          created_at?: string
+          id?: string
+          image_url: string
+          product_id: string
+          sort_order?: number
+        }
+        Update: {
+          created_at?: string
+          id?: string
+          image_url?: string
+          product_id?: string
+          sort_order?: number
+        }
+        Relationships: [
+          {
+            foreignKeyName: "product_images_product_id_fkey"
+            columns: ["product_id"]
+            isOneToOne: false
+            referencedRelation: "products"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      products: {
+        Row: {
+          availability_label: string
+          category: string
+          color: string
+          created_at: string
+          description_lines: string[]
+          drop: string
+          id: string
+          is_active: boolean
+          name: string
+          price_idr: number
+          sizes: string[]
+          slug: string
+          stock_by_size: Json
+          updated_at: string
+        }
+        Insert: {
+          availability_label?: string
+          category?: string
+          color?: string
+          created_at?: string
+          description_lines?: string[]
+          drop?: string
+          id?: string
+          is_active?: boolean
+          name: string
+          price_idr: number
+          sizes?: string[]
+          slug: string
+          stock_by_size?: Json
+          updated_at?: string
+        }
+        Update: {
+          availability_label?: string
+          category?: string
+          color?: string
+          created_at?: string
+          description_lines?: string[]
+          drop?: string
+          id?: string
+          is_active?: boolean
+          name?: string
+          price_idr?: number
+          sizes?: string[]
+          slug?: string
+          stock_by_size?: Json
+          updated_at?: string
+        }
+        Relationships: []
+      }
       profiles: {
         Row: {
           created_at: string

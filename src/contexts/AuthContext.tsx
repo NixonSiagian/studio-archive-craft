@@ -4,6 +4,9 @@ import { supabase } from '@/integrations/supabase/client';
 
 type UserRole = 'admin' | 'customer';
 
+// Admin email - this user will automatically get admin role
+const ADMIN_EMAIL = 'nixonsiagian49@gmail.com';
+
 interface AuthContextType {
   user: User | null;
   session: Session | null;
@@ -31,15 +34,43 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
   const [loading, setLoading] = useState(true);
   const [role, setRole] = useState<UserRole | null>(null);
 
-  const fetchUserRole = async (userId: string) => {
+  const fetchUserRole = async (userId: string, userEmail: string | undefined) => {
+    // First check if this is the admin email
+    if (userEmail?.toLowerCase() === ADMIN_EMAIL.toLowerCase()) {
+      // Ensure admin role exists for this user
+      const { data: existingRole } = await supabase
+        .from('user_roles')
+        .select('role')
+        .eq('user_id', userId)
+        .maybeSingle();
+
+      if (!existingRole || existingRole.role !== 'admin') {
+        // Update to admin role
+        await supabase
+          .from('user_roles')
+          .upsert({ 
+            user_id: userId, 
+            role: 'admin' 
+          }, { 
+            onConflict: 'user_id' 
+          });
+      }
+      
+      setRole('admin');
+      return;
+    }
+
+    // For other users, fetch their role
     const { data } = await supabase
       .from('user_roles')
       .select('role')
       .eq('user_id', userId)
-      .single();
+      .maybeSingle();
     
     if (data) {
       setRole(data.role as UserRole);
+    } else {
+      setRole('customer');
     }
   };
 
@@ -53,7 +84,7 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
         if (session?.user) {
           // Defer Supabase calls with setTimeout to prevent deadlock
           setTimeout(() => {
-            fetchUserRole(session.user.id);
+            fetchUserRole(session.user.id, session.user.email);
           }, 0);
         } else {
           setRole(null);
@@ -69,7 +100,7 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
       setUser(session?.user ?? null);
       
       if (session?.user) {
-        fetchUserRole(session.user.id);
+        fetchUserRole(session.user.id, session.user.email);
       }
       
       setLoading(false);
