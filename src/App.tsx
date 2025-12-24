@@ -14,6 +14,7 @@ import Studio from "./pages/Studio";
 import Contact from "./pages/Contact";
 import Checkout from "./pages/Checkout";
 import OrderConfirmation from "./pages/OrderConfirmation";
+import PaymentInstructions from "./pages/PaymentInstructions";
 import Auth from "./pages/Auth";
 import ResetPassword from "./pages/ResetPassword";
 import AccountOrders from "./pages/AccountOrders";
@@ -49,17 +50,42 @@ const App = () => (
                 </ProtectedRoute>
               } />
               <Route path="/order-confirmation" element={<OrderConfirmation />} />
+              <Route path="/payment-instructions" element={
+                <ProtectedRoute>
+                  <PaymentInstructions />
+                </ProtectedRoute>
+              } />
               <Route path="/account/orders" element={
                 <ProtectedRoute>
                   <AccountOrders />
                 </ProtectedRoute>
               } />
-              {/* Admin Routes */}
-              <Route path="/admin" element={<AdminDashboard />} />
-              <Route path="/admin/orders" element={<AdminOrders />} />
-              <Route path="/admin/order/:id" element={<AdminOrderDetail />} />
-              <Route path="/admin/products" element={<AdminProducts />} />
-              <Route path="/admin/products/:id" element={<AdminProductForm />} />
+              {/* Admin Routes - Protected with requireAdmin */}
+              <Route path="/admin" element={
+                <ProtectedRoute requireAdmin>
+                  <AdminDashboard />
+                </ProtectedRoute>
+              } />
+              <Route path="/admin/orders" element={
+                <ProtectedRoute requireAdmin>
+                  <AdminOrders />
+                </ProtectedRoute>
+              } />
+              <Route path="/admin/order/:id" element={
+                <ProtectedRoute requireAdmin>
+                  <AdminOrderDetail />
+                </ProtectedRoute>
+              } />
+              <Route path="/admin/products" element={
+                <ProtectedRoute requireAdmin>
+                  <AdminProducts />
+                </ProtectedRoute>
+              } />
+              <Route path="/admin/products/:id" element={
+                <ProtectedRoute requireAdmin>
+                  <AdminProductForm />
+                </ProtectedRoute>
+              } />
               <Route path="*" element={<NotFound />} />
             </Routes>
           </BrowserRouter>

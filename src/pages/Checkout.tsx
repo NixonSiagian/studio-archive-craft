@@ -97,7 +97,8 @@ const Checkout = () => {
 
       clearCart();
       toast.success('Order placed successfully');
-      navigate('/order-confirmation', { state: { orderNumber: order.order_number } });
+      // Redirect to payment instructions instead of confirmation
+      navigate('/payment-instructions', { state: { orderNumber: order.order_number } });
     } catch (error) {
       if (error instanceof z.ZodError) {
         const firstError = error.errors[0];
