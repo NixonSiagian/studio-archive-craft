@@ -79,8 +79,6 @@ const Auth = () => {
           toast.error('Too many requests. Please wait a few minutes before trying again.');
           return;
         }
-        // Log for debugging but show generic message
-        console.error('Password reset error:', error.message);
       }
       
       // Always show success message (don't reveal if account exists)
@@ -92,8 +90,7 @@ const Auth = () => {
         { duration: 8000 }
       );
       setMode('login');
-    } catch (err) {
-      console.error('Unexpected password reset error:', err);
+    } catch {
       toast.error('An unexpected error occurred. Please try again later.');
     } finally {
       setIsSubmitting(false);

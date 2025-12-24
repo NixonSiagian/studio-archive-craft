@@ -18,14 +18,6 @@ const Header = () => {
   const { user, isAdmin, loading, role } = useAuth();
   const location = useLocation();
 
-  // Debug logging (remove after verification)
-  console.log('[Header] Auth State:', { 
-    email: user?.email, 
-    role, 
-    isAdmin, 
-    loading 
-  });
-
   const publicNavLinks = [
     { href: '/shop', label: 'SHOP' },
     { href: '/archive', label: 'ARCHIVE' },
