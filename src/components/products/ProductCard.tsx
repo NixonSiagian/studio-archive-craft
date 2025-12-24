@@ -28,10 +28,10 @@ interface ProductCardProps {
 
 // Fallback images for legacy products
 const productImageMap: Record<string, string> = {
-  'ant-man-tee': productAntman,
-  'drake-tee': productDrake,
-  'brent-tee': productBrent,
-  'tyler-tee': productTyler
+  'ant-man': productAntman,
+  'drake': productDrake,
+  'brent': productBrent,
+  'if-youre-reading-this': productTyler
 };
 
 export const getProductImage = (product: DbProduct): string => {
