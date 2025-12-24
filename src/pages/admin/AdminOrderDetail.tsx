@@ -52,6 +52,7 @@ const AdminOrderDetail = () => {
   const [fulfillmentStatus, setFulfillmentStatus] = useState<string>('');
   const [notes, setNotes] = useState<string>('');
   const [hasChanges, setHasChanges] = useState(false);
+  const [signedProofUrl, setSignedProofUrl] = useState<string | null>(null);
 
   const { data: order, isLoading, error } = useQuery({
     queryKey: ['admin-order', id],
@@ -76,6 +77,17 @@ const AdminOrderDetail = () => {
       setPaymentStatus(fullOrder.payment_status);
       setFulfillmentStatus(fullOrder.fulfillment_status);
       setNotes(fullOrder.internal_notes || '');
+
+      // Generate signed URL for payment proof if exists
+      if (fullOrder.payment_proof_url) {
+        const { data: signedData } = await supabase.storage
+          .from('payment-proofs')
+          .createSignedUrl(fullOrder.payment_proof_url, 3600);
+        
+        if (signedData?.signedUrl) {
+          setSignedProofUrl(signedData.signedUrl);
+        }
+      }
       
       return fullOrder;
     },
@@ -256,11 +268,11 @@ const AdminOrderDetail = () => {
                     <p className="text-sm font-mono">{order.payment_last4}</p>
                   </div>
                 )}
-                {order.payment_proof_url && (
+                {order.payment_proof_url && signedProofUrl && (
                   <div>
                     <p className="text-xs text-muted-foreground mb-2">Proof Image</p>
                     <a
-                      href={order.payment_proof_url}
+                      href={signedProofUrl}
                       target="_blank"
                       rel="noopener noreferrer"
                       className="inline-flex items-center gap-2 text-sm hover:opacity-70 transition-opacity"
