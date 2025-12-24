@@ -1,6 +1,6 @@
 import { useQuery } from '@tanstack/react-query';
 import { Link } from 'react-router-dom';
-import { Package, DollarSign, Clock, CheckCircle } from 'lucide-react';
+import { Package, DollarSign, Clock, CheckCircle, Users, ShoppingBag } from 'lucide-react';
 import { supabase } from '@/integrations/supabase/client';
 import AdminLayout from '@/components/admin/AdminLayout';
 import { formatPrice } from '@/data/products';
@@ -9,11 +9,26 @@ const AdminDashboard = () => {
   const { data: stats, isLoading } = useQuery({
     queryKey: ['admin-dashboard-stats'],
     queryFn: async () => {
-      const { data: orders, error } = await supabase
+      // Fetch orders
+      const { data: orders, error: ordersError } = await supabase
         .from('orders')
         .select('id, total_price, payment_status, fulfillment_status, created_at');
 
-      if (error) throw error;
+      if (ordersError) throw ordersError;
+
+      // Fetch users count
+      const { count: usersCount, error: usersError } = await supabase
+        .from('profiles')
+        .select('*', { count: 'exact', head: true });
+
+      if (usersError) throw usersError;
+
+      // Fetch products count
+      const { count: productsCount, error: productsError } = await supabase
+        .from('products')
+        .select('*', { count: 'exact', head: true });
+
+      if (productsError) throw productsError;
 
       const today = new Date();
       today.setHours(0, 0, 0, 0);
@@ -30,6 +45,8 @@ const AdminDashboard = () => {
         pendingOrders,
         completedOrders,
         todayOrders,
+        totalUsers: usersCount || 0,
+        totalProducts: productsCount || 0,
       };
     },
   });
@@ -53,6 +70,18 @@ const AdminDashboard = () => {
       href: '/admin/orders?fulfillment=processing',
     },
     {
+      title: 'Products',
+      value: stats?.totalProducts || 0,
+      icon: ShoppingBag,
+      href: '/admin/products',
+    },
+    {
+      title: 'Users',
+      value: stats?.totalUsers || 0,
+      icon: Users,
+      href: '/admin/users',
+    },
+    {
       title: 'Completed',
       value: stats?.completedOrders || 0,
       icon: CheckCircle,
@@ -69,7 +98,7 @@ const AdminDashboard = () => {
       ) : (
         <>
           {/* Stats Grid */}
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-12">
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 md:gap-6 mb-12">
             {statCards.map((stat) => {
               const content = (
                 <div className="border border-border p-6 hover:border-foreground/30 transition-colors">
