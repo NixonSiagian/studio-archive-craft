@@ -42,10 +42,10 @@ const Contact = () => {
                 <div>
                   <p className="text-mono text-muted-foreground mb-2">EMAIL</p>
                   <a 
-                    href="mailto:studio@wnm.co"
+                    href="mailto:studio@wnmwear.store"
                     className="text-lg hover:opacity-70 transition-opacity"
                   >
-                    studio@wnm.co
+                    studio@wnmwear.store
                   </a>
                 </div>
                 <div>
