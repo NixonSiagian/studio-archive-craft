@@ -3,6 +3,7 @@ import { Link, useLocation } from 'react-router-dom';
 import { Menu, X } from 'lucide-react';
 import { useCart } from '@/contexts/CartContext';
 import CartDrawer from '@/components/cart/CartDrawer';
+import logoWnm from '@/assets/logo-wnm.png';
 
 const Header = () => {
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
@@ -26,9 +27,13 @@ const Header = () => {
             {/* Logo */}
             <Link 
               to="/" 
-              className="font-display text-2xl md:text-3xl tracking-tight font-light hover:opacity-70 transition-opacity duration-300"
+              className="hover:opacity-70 transition-opacity duration-300"
             >
-              WNM
+              <img 
+                src={logoWnm} 
+                alt="WNM" 
+                className="h-10 md:h-12 w-auto"
+              />
             </Link>
 
             {/* Desktop Navigation */}

@@ -33,42 +33,34 @@ export const products: Product[] = [
       "Oversized fit",
       "Produced once — No restock"
     ],
-    images: [
-      "/placeholder-product-1.jpg",
-      "/placeholder-product-2.jpg",
-      "/placeholder-product-3.jpg"
-    ],
+    images: ["antman"],
     sizes: ["S", "M", "L", "XL"],
     inStock: true
   },
   {
-    id: "if-youre-reading-this-tee",
-    name: "IF YOU'RE READING THIS",
+    id: "drake-tee",
+    name: "DRAKE",
     price: 299000,
     currency: "IDR",
     drop: "archive-001",
     dropLabel: "ARCHIVE 001",
     category: "tee",
-    color: "White",
+    color: "Off-white",
     availability: "limited",
     availabilityLabel: "Limited Run",
     description: [
       "Premium cotton blend",
-      "Typographic print",
+      "Portrait graphic print",
       "Regular fit",
       "Produced once — No restock"
     ],
-    images: [
-      "/placeholder-product-1.jpg",
-      "/placeholder-product-2.jpg",
-      "/placeholder-product-3.jpg"
-    ],
+    images: ["drake"],
     sizes: ["S", "M", "L", "XL"],
     inStock: true
   },
   {
     id: "brent-tee",
-    name: "BRENT",
+    name: "BRENT FAIYAZ",
     price: 299000,
     currency: "IDR",
     drop: "archive-001",
@@ -83,17 +75,13 @@ export const products: Product[] = [
       "Relaxed silhouette",
       "Produced once — No restock"
     ],
-    images: [
-      "/placeholder-product-1.jpg",
-      "/placeholder-product-2.jpg",
-      "/placeholder-product-3.jpg"
-    ],
+    images: ["brent"],
     sizes: ["S", "M", "L", "XL"],
     inStock: true
   },
   {
-    id: "wnm-studio-tee",
-    name: "WNM STUDIO",
+    id: "tyler-tee",
+    name: "TYLER THE CREATOR",
     price: 279000,
     currency: "IDR",
     drop: "archive-002",
@@ -104,15 +92,11 @@ export const products: Product[] = [
     availabilityLabel: "Limited Run",
     description: [
       "Organic cotton",
-      "Embroidered logo",
+      "Chromakopia inspired",
       "Boxy cut",
       "Produced once — No restock"
     ],
-    images: [
-      "/placeholder-product-1.jpg",
-      "/placeholder-product-2.jpg",
-      "/placeholder-product-3.jpg"
-    ],
+    images: ["tyler"],
     sizes: ["S", "M", "L", "XL"],
     inStock: true
   }
@@ -143,4 +127,20 @@ export const formatPrice = (price: number, currency: string = "IDR"): string => 
     style: 'currency',
     currency
   }).format(price);
+};
+
+// Size guide data
+export const sizeGuide = {
+  measurements: [
+    { size: 'S', chest: '50', length: '70', shoulder: '46' },
+    { size: 'M', chest: '54', length: '72', shoulder: '48' },
+    { size: 'L', chest: '58', length: '74', shoulder: '50' },
+    { size: 'XL', chest: '62', length: '76', shoulder: '52' },
+  ],
+  unit: 'cm',
+  notes: [
+    'Measurements are in centimeters',
+    'Oversized fit — we recommend sizing down for a more fitted look',
+    'Models wear size L (height 180cm, chest 96cm)'
+  ]
 };
