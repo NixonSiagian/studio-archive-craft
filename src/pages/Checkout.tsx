@@ -1,8 +1,9 @@
-import { useState, FormEvent } from 'react';
+import { useState, FormEvent, useEffect } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import { ArrowLeft } from 'lucide-react';
 import Layout from '@/components/layout/Layout';
 import { useCart } from '@/contexts/CartContext';
+import { useAuth } from '@/contexts/AuthContext';
 import { formatPrice } from '@/data/products';
 import { toast } from '@/components/ui/sonner';
 import { supabase } from '@/integrations/supabase/client';
@@ -10,6 +11,7 @@ import { supabase } from '@/integrations/supabase/client';
 const Checkout = () => {
   const navigate = useNavigate();
   const { items, totalPrice, clearCart } = useCart();
+  const { user } = useAuth();
   const [isSubmitting, setIsSubmitting] = useState(false);
 
   const [shippingInfo, setShippingInfo] = useState({
@@ -23,6 +25,13 @@ const Checkout = () => {
     postalCode: '',
     country: 'Indonesia'
   });
+
+  // Pre-fill email from user account
+  useEffect(() => {
+    if (user?.email) {
+      setShippingInfo(prev => ({ ...prev, email: user.email || '' }));
+    }
+  }, [user]);
 
   const shippingCost = 25000; // 25K IDR
   const grandTotal = totalPrice + shippingCost;
@@ -39,6 +48,7 @@ const Checkout = () => {
       const { data: order, error: orderError } = await supabase
         .from('orders')
         .insert({
+          user_id: user?.id,
           customer_name: customerName,
           customer_email: shippingInfo.email,
           customer_phone: shippingInfo.phone,

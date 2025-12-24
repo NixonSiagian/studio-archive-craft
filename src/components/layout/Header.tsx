@@ -1,13 +1,15 @@
 import { useState } from 'react';
 import { Link, useLocation } from 'react-router-dom';
-import { Menu, X } from 'lucide-react';
+import { Menu, X, User } from 'lucide-react';
 import { useCart } from '@/contexts/CartContext';
+import { useAuth } from '@/contexts/AuthContext';
 import CartDrawer from '@/components/cart/CartDrawer';
 import logoWnm from '@/assets/logo-wnm.png';
 
 const Header = () => {
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
   const { totalItems, setIsCartOpen } = useCart();
+  const { user, isAdmin } = useAuth();
   const location = useLocation();
 
   const navLinks = [
@@ -18,6 +20,18 @@ const Header = () => {
   ];
 
   const isActive = (path: string) => location.pathname === path;
+
+  const getAccountLink = () => {
+    if (!user) return '/auth';
+    if (isAdmin) return '/admin/orders';
+    return '/account/orders';
+  };
+
+  const getAccountLabel = () => {
+    if (!user) return 'SIGN IN';
+    if (isAdmin) return 'ADMIN';
+    return 'ACCOUNT';
+  };
 
   return (
     <>
@@ -51,8 +65,16 @@ const Header = () => {
               ))}
             </div>
 
-            {/* Cart & Mobile Menu */}
+            {/* Account, Cart & Mobile Menu */}
             <div className="flex items-center gap-6">
+              <Link
+                to={getAccountLink()}
+                className="hidden md:flex items-center gap-2 text-caption link-underline opacity-70 hover:opacity-100 transition-opacity duration-300"
+              >
+                <User size={14} />
+                {getAccountLabel()}
+              </Link>
+
               <button
                 onClick={() => setIsCartOpen(true)}
                 className="text-caption link-underline relative"
@@ -91,6 +113,14 @@ const Header = () => {
                     {link.label}
                   </Link>
                 ))}
+                <Link
+                  to={getAccountLink()}
+                  onClick={() => setIsMobileMenuOpen(false)}
+                  className="text-caption opacity-70 flex items-center gap-2"
+                >
+                  <User size={14} />
+                  {getAccountLabel()}
+                </Link>
               </div>
             </div>
           )}
