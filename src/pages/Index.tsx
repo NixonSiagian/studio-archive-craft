@@ -15,25 +15,33 @@ const Index = () => {
       <meta name="description" content="WNM is a clothing studio producing limited-run garments. Each piece documented, produced once, never restocked. EST 2025." />
 
       {/* Hero Section */}
-      <section className="relative h-screen flex items-center justify-center overflow-hidden bg-[#d4cfc7]">
+      <section className="relative h-screen flex items-center justify-center overflow-hidden bg-cream">
+        {/* Subtle grain overlay */}
+        <div 
+          className="absolute inset-0 z-[1] pointer-events-none opacity-[0.03]"
+          style={{
+            backgroundImage: `url("data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noise'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.85' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noise)'/%3E%3C/svg%3E")`,
+          }}
+        />
+        
         {/* Model Image */}
         <div className="absolute inset-0 flex items-center justify-center">
           <img 
             src={heroModel} 
             alt="Model wearing WNM Drake t-shirt"
-            className="h-full w-auto max-w-full object-contain animate-fade-in"
+            className="h-full w-auto max-w-full object-contain animate-fade-in grayscale-[20%] contrast-[0.95]"
           />
         </div>
 
         {/* Content - Bottom positioned */}
         <div className="absolute bottom-16 left-0 right-0 z-10 px-6 lg:px-12 animate-fade-in">
           <div className="max-w-7xl mx-auto">
-            <h1 className="text-sm tracking-[0.2em] font-light text-foreground/80 mb-4">
+            <h1 className="text-sm tracking-[0.2em] font-medium text-foreground mb-4">
               CLOTHING AS DOCUMENTATION
             </h1>
             <Link 
               to="/shop" 
-              className="inline-flex items-center text-xs tracking-[0.15em] text-foreground/60 hover:text-foreground transition-colors"
+              className="inline-flex items-center text-xs tracking-[0.15em] text-muted-foreground hover:text-foreground transition-colors"
             >
               VIEW COLLECTION <ArrowRight size={12} className="ml-2" />
             </Link>
