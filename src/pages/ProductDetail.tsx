@@ -127,12 +127,42 @@ const ProductDetail = () => {
     );
   }
 
+  // JSON-LD structured data for rich snippets
+  const structuredData = {
+    '@context': 'https://schema.org',
+    '@type': 'Product',
+    name: product.name,
+    description: product.description_lines.join(' '),
+    image: productImages[0] || 'https://wnmwear.store/og-image.jpg',
+    brand: {
+      '@type': 'Brand',
+      name: 'WNM Studio',
+    },
+    offers: {
+      '@type': 'Offer',
+      url: `https://wnmwear.store/product/${product.slug}`,
+      priceCurrency: 'IDR',
+      price: product.price_idr,
+      availability: 'https://schema.org/InStock',
+      seller: {
+        '@type': 'Organization',
+        name: 'WNM Studio',
+      },
+    },
+    category: product.category,
+    color: product.color,
+  };
+
   return (
     <Layout>
       <title>{product.name} — WNM</title>
       <meta
         name="description"
         content={`${product.name} from ${dropLabel}. ${product.description_lines.join(' ')}`}
+      />
+      <script
+        type="application/ld+json"
+        dangerouslySetInnerHTML={{ __html: JSON.stringify(structuredData) }}
       />
 
       <section className="py-section">
