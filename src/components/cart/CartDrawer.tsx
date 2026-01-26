@@ -1,6 +1,7 @@
+import { useState } from 'react';
 import { Link } from 'react-router-dom';
 import { X, Minus, Plus } from 'lucide-react';
-import { useCart } from '@/contexts/CartContext';
+import { useCart, CartItem } from '@/contexts/CartContext';
 import { formatPrice } from '@/data/products';
 import {
   Sheet,
@@ -8,6 +9,75 @@ import {
   SheetHeader,
   SheetTitle,
 } from '@/components/ui/sheet';
+
+// Separate component to handle image loading state safely
+const CartItemRow = ({ item }: { item: CartItem }) => {
+  const [imageError, setImageError] = useState(false);
+  const { removeFromCart, updateQuantity } = useCart();
+  const primaryImage = item.product.images?.[0];
+
+  return (
+    <div className="flex gap-4">
+      {/* Product Image */}
+      <div className="w-24 h-28 bg-muted flex-shrink-0 overflow-hidden p-2">
+        {primaryImage && !imageError ? (
+          <img 
+            src={primaryImage}
+            alt={item.product.name}
+            className="w-full h-full object-contain"
+            onError={() => setImageError(true)}
+          />
+        ) : (
+          <div className="w-full h-full flex items-center justify-center">
+            <span className="text-[8px] text-muted-foreground tracking-widest uppercase text-center">IMAGE PENDING</span>
+          </div>
+        )}
+      </div>
+
+      {/* Product Details */}
+      <div className="flex-1 flex flex-col justify-between py-1">
+        <div>
+          <h4 className="heading-product text-sm">{item.product.name}</h4>
+          <p className="text-xs text-muted-foreground mt-1">
+            Size: {item.size}
+          </p>
+        </div>
+
+        <div className="flex items-center justify-between">
+          {/* Quantity Controls */}
+          <div className="flex items-center gap-3">
+            <button
+              onClick={() => updateQuantity(item.product.id, item.size, item.quantity - 1)}
+              className="p-1 hover:opacity-70 transition-opacity"
+            >
+              <Minus size={14} />
+            </button>
+            <span className="text-sm w-6 text-center">{item.quantity}</span>
+            <button
+              onClick={() => updateQuantity(item.product.id, item.size, item.quantity + 1)}
+              className="p-1 hover:opacity-70 transition-opacity"
+            >
+              <Plus size={14} />
+            </button>
+          </div>
+
+          {/* Price */}
+          <p className="text-sm">
+            {formatPrice(item.product.price * item.quantity)}
+          </p>
+        </div>
+      </div>
+
+      {/* Remove Button */}
+      <button
+        onClick={() => removeFromCart(item.product.id, item.size)}
+        className="self-start p-1 hover:opacity-70 transition-opacity"
+      >
+        <X size={14} />
+      </button>
+    </div>
+  );
+};
 
 const CartDrawer = () => {
   const { 
@@ -51,81 +121,9 @@ const CartDrawer = () => {
           <>
             <div className="flex-1 overflow-y-auto px-6 py-6">
               <div className="space-y-6">
-                {items.map((item) => {
-                  const primaryImage = item.product.images?.[0];
-                  
-                  return (
-                    <div 
-                      key={`${item.product.id}-${item.size}`}
-                      className="flex gap-4"
-                    >
-                      {/* Product Image */}
-                      <div className="w-24 h-28 bg-muted flex-shrink-0 overflow-hidden p-2">
-                        {primaryImage ? (
-                          <img 
-                            src={primaryImage}
-                            alt={item.product.name}
-                            className="w-full h-full object-contain"
-                            onError={(e) => {
-                              const target = e.target as HTMLImageElement;
-                              target.style.display = 'none';
-                              const parent = target.parentElement;
-                              if (parent) {
-                                parent.innerHTML = '<span class="text-[8px] text-muted-foreground tracking-widest uppercase w-full h-full flex items-center justify-center text-center">IMAGE PENDING</span>';
-                              }
-                            }}
-                          />
-                        ) : (
-                          <div className="w-full h-full flex items-center justify-center">
-                            <span className="text-[8px] text-muted-foreground tracking-widest uppercase text-center">IMAGE PENDING</span>
-                          </div>
-                        )}
-                      </div>
-
-                      {/* Product Details */}
-                      <div className="flex-1 flex flex-col justify-between py-1">
-                        <div>
-                          <h4 className="heading-product text-sm">{item.product.name}</h4>
-                          <p className="text-xs text-muted-foreground mt-1">
-                            Size: {item.size}
-                          </p>
-                        </div>
-
-                        <div className="flex items-center justify-between">
-                          {/* Quantity Controls */}
-                          <div className="flex items-center gap-3">
-                            <button
-                              onClick={() => updateQuantity(item.product.id, item.size, item.quantity - 1)}
-                              className="p-1 hover:opacity-70 transition-opacity"
-                            >
-                              <Minus size={14} />
-                            </button>
-                            <span className="text-sm w-6 text-center">{item.quantity}</span>
-                            <button
-                              onClick={() => updateQuantity(item.product.id, item.size, item.quantity + 1)}
-                              className="p-1 hover:opacity-70 transition-opacity"
-                            >
-                              <Plus size={14} />
-                            </button>
-                          </div>
-
-                          {/* Price */}
-                          <p className="text-sm">
-                            {formatPrice(item.product.price * item.quantity)}
-                          </p>
-                        </div>
-                      </div>
-
-                      {/* Remove Button */}
-                      <button
-                        onClick={() => removeFromCart(item.product.id, item.size)}
-                        className="self-start p-1 hover:opacity-70 transition-opacity"
-                      >
-                        <X size={14} />
-                      </button>
-                    </div>
-                  );
-                })}
+                {items.map((item) => (
+                  <CartItemRow key={`${item.product.id}-${item.size}`} item={item} />
+                ))}
               </div>
             </div>
 
