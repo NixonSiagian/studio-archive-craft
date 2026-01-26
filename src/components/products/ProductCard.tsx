@@ -1,3 +1,4 @@
+import { useState } from 'react';
 import { Link } from 'react-router-dom';
 import { formatPrice } from '@/data/products';
 import productBrent from '@/assets/product-brent.jpg';
@@ -56,6 +57,7 @@ export const ImagePlaceholder = ({ className = '' }: { className?: string }) => 
 );
 
 const ProductCard = ({ product }: ProductCardProps) => {
+  const [imageError, setImageError] = useState(false);
   const image = getProductImage(product);
 
   // Format drop label (e.g., "archive-001" -> "ARCHIVE 001")
@@ -68,24 +70,13 @@ const ProductCard = ({ product }: ProductCardProps) => {
     >
       {/* Product Image */}
       <div className="aspect-square bg-muted mb-4 overflow-hidden relative p-6">
-        {image ? (
+        {image && !imageError ? (
           <img 
             src={image}
             alt={product.name}
             className="w-full h-full object-contain transition-transform duration-700 group-hover:scale-[1.03]"
             loading="lazy"
-            onError={(e) => {
-              // Hide broken image and show placeholder
-              const target = e.target as HTMLImageElement;
-              target.style.display = 'none';
-              const parent = target.parentElement;
-              if (parent) {
-                const placeholder = document.createElement('div');
-                placeholder.className = 'w-full h-full flex items-center justify-center';
-                placeholder.innerHTML = '<span class="text-[10px] text-muted-foreground tracking-widest uppercase">IMAGE PENDING</span>';
-                parent.appendChild(placeholder);
-              }
-            }}
+            onError={() => setImageError(true)}
           />
         ) : (
           <ImagePlaceholder className="w-full h-full" />
