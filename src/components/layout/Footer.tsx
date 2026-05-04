@@ -1,64 +1,35 @@
-import { Link } from 'react-router-dom';
-
 const Footer = () => {
   return (
-    <footer className="bg-foreground text-background py-16 md:py-24">
-      <div className="container mx-auto px-6 lg:px-12">
-        <div className="grid grid-cols-1 md:grid-cols-4 gap-12 md:gap-8">
-          {/* Logo & Tagline */}
-          <div className="md:col-span-2">
-            <Link to="/" className="font-display text-4xl md:text-5xl tracking-tight font-light">
-              WNM
-            </Link>
-            <p className="mt-4 text-caption text-background/60">
-              A CLOTHING STUDIO
-            </p>
-            <p className="mt-6 text-sm text-background/50 max-w-sm font-light">
-              Clothing as documentation. Each piece produced once, never restocked.
+    <footer className="border-t border-white/10 bg-background/80">
+      <div className="container mx-auto px-6 lg:px-12 py-12 md:py-16">
+        <div className="flex flex-col gap-8 md:flex-row md:items-center md:justify-between">
+          <div>
+            <p className="text-lg font-semibold tracking-tight">Nixon Siagian</p>
+            <p className="text-sm text-muted-foreground mt-2 max-w-md">
+              3D portfolio designer yang membangun pengalaman web liquid glass modern dengan
+              Three.js, motion, dan storytelling visual.
             </p>
           </div>
 
-          {/* Navigation */}
-          <div>
-            <h4 className="text-caption text-background/60 mb-6">NAVIGATE</h4>
-            <nav className="flex flex-col gap-3">
-              <Link to="/shop" className="text-sm hover:opacity-70 transition-opacity">Shop</Link>
-              <Link to="/archive" className="text-sm hover:opacity-70 transition-opacity">Archive</Link>
-              <Link to="/studio" className="text-sm hover:opacity-70 transition-opacity">Studio</Link>
-              <Link to="/contact" className="text-sm hover:opacity-70 transition-opacity">Contact</Link>
-            </nav>
-          </div>
-
-          {/* Connect */}
-          <div>
-            <h4 className="text-caption text-background/60 mb-6">CONNECT</h4>
-            <nav className="flex flex-col gap-3">
-              <a 
-                href="https://instagram.com/wnm.studioo" 
-                target="_blank" 
-                rel="noopener noreferrer"
-                className="text-sm hover:opacity-70 transition-opacity"
-              >
-                Instagram
-              </a>
-              <a 
-                href="mailto:studio@wnmwear.store"
-                className="text-sm hover:opacity-70 transition-opacity"
-              >
-                studio@wnmwear.store
-              </a>
-            </nav>
+          <div className="flex flex-wrap gap-4 text-xs uppercase tracking-[0.3em] text-muted-foreground">
+            <a href="#projects" className="hover:text-foreground transition-colors">
+              Projects
+            </a>
+            <a href="#services" className="hover:text-foreground transition-colors">
+              Services
+            </a>
+            <a href="mailto:hello@nixonstudio.io" className="hover:text-foreground transition-colors">
+              Email
+            </a>
+            <a href="https://www.behance.net" target="_blank" rel="noreferrer" className="hover:text-foreground transition-colors">
+              Behance
+            </a>
           </div>
         </div>
 
-        {/* Bottom Bar */}
-        <div className="mt-16 pt-8 border-t border-background/10 flex flex-col md:flex-row justify-between gap-4">
-          <p className="text-xs text-background/40">
-            © 2025 WNM STUDIO. ALL RIGHTS RESERVED.
-          </p>
-          <p className="text-xs text-background/40">
-            EST 2025
-          </p>
+        <div className="mt-10 pt-6 border-t border-white/10 flex flex-col sm:flex-row gap-4 justify-between text-xs text-muted-foreground">
+          <span>© 2026 Nixon Studio. All rights reserved.</span>
+          <span>Crafted in Jakarta • Remote worldwide</span>
         </div>
       </div>
     </footer>
