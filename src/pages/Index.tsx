@@ -167,7 +167,7 @@ const Index = () => {
                 </div>
                 <div className="flex items-center justify-between">
                   <span className="text-muted-foreground">Response</span>
-                  <span>&lt; 24 hours</span>
+                  <span>{"< 24 hours"}</span>
                 </div>
                 <div className="flex items-center justify-between">
                   <span className="text-muted-foreground">Timezone</span>
